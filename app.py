@@ -326,7 +326,7 @@ if find or browse:
     )
 
     if browse:
-        results = retriever.browse(category=None, top_k=20)
+        results = retriever.browse(category=None, top_k=100)
         explanation = None
     else:
         # IMPORTANT: the user's stated need is the primary retrieval signal.
