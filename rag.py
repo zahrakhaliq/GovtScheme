@@ -73,7 +73,7 @@ class SchemeRetriever:
         results.sort(key=lambda x: x[1], reverse=True)
         return results[:top_k]
 
-    def browse(self, category=None, top_k=20):
+    def browse(self, category=None, top_k=100):
         items = self.schemes
         if category:
             items = [s for s in items if s["category"].lower() == category.lower()]
