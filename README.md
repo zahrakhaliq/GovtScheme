@@ -46,4 +46,4 @@ The app works without Groq; the retrieval and eligibility logic remain available
 
 ## Current dataset
 
-The MVP contains a focused set of Punjab agriculture, business, education, energy and social-support schemes. It is intentionally small for a reliable demo and can be expanded later with a controlled official-source refresh process.
+The current knowledge base contains 36 verified Punjab Government scheme/initiative records across six user-facing fields: Agriculture, Education, Business, Social Welfare, Energy, and Livestock. Sources are restricted to official Punjab Government departments/portals. Criteria and intake status can change, so the app always directs users to the official source for verification.
