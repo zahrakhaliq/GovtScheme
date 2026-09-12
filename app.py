@@ -247,6 +247,29 @@ else:
     st.caption("👤 First enter your basic profile in the sidebar, then tell us what you need. Your need will drive the search.")
 
 st.markdown('<div class="section-label">💬 What do you need?</div>', unsafe_allow_html=True)
+st.caption("You can choose a field for a quicker search, or skip it and simply describe your need.")
+
+field_labels = [
+    "No specific field",
+    "🎓 Education",
+    "🌾 Agriculture",
+    "💼 Business",
+    "☀️ Energy",
+]
+field_choice = st.radio(
+    "Quickly choose a field (optional)",
+    field_labels,
+    horizontal=True,
+    index=0,
+)
+field_map = {
+    "🎓 Education": "Education",
+    "🌾 Agriculture": "Agriculture",
+    "💼 Business": "Business",
+    "☀️ Energy": "Energy",
+}
+selected_category = field_map.get(field_choice)
+
 query = st.text_area(
     "Describe your situation in your own words *",
     height=125,
@@ -286,9 +309,9 @@ if find or browse:
         # IMPORTANT: the user's stated need is the primary retrieval signal.
         # Profile facts are used mainly for preliminary eligibility, not to force a category.
         inferred_category = infer_category_from_query(query, {})
-        # User need is the primary signal. Category is inferred internally and is
-        # never exposed as a manual filter in the MVP UI.
-        active_category = inferred_category
+        # A user-selected field is an optional search constraint. If no field is
+        # selected, the system infers intent from the natural-language need.
+        active_category = selected_category or inferred_category
         retrieval_query = query.strip()
 
         results = retriever.search(
