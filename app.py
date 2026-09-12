@@ -69,6 +69,14 @@ st.markdown("""
     .status-no { background:#fff0f0; border-left:4px solid #d95353; }
     .official-link { display:inline-block; margin-top:15px; padding:9px 14px; border-radius:10px; background:#075e54; color:white !important; text-decoration:none !important; font-weight:700; font-size:.86rem; }
     .section-label { font-size:1.45rem; font-weight:750; color:#172033; margin: 8px 0 14px; }
+    .field-card {
+        border:1px solid #e1e5ec; border-radius:14px; padding:13px 14px 11px;
+        background:#ffffff; min-height:105px; margin-bottom:8px;
+        box-shadow:0 2px 8px rgba(23,32,51,.05);
+    }
+    .field-card-title { font-weight:750; color:#172033; font-size:1rem; margin-bottom:4px; }
+    .field-card-text { color:#667085; font-size:.79rem; line-height:1.35; }
+    .field-selected { border:2px solid #ff5a5f; background:#fff7f7; }
     [data-testid="stSidebar"] { background: linear-gradient(180deg, #f0faf6 0%, #f8f6ff 100%); }
     [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 { color:#17483f; }
     div.stButton > button[kind="primary"] { border-radius:12px; font-weight:700; }
@@ -247,28 +255,43 @@ else:
     st.caption("👤 First enter your basic profile in the sidebar, then tell us what you need. Your need will drive the search.")
 
 st.markdown('<div class="section-label">💬 What do you need?</div>', unsafe_allow_html=True)
-st.caption("You can choose a field for a quicker search, or skip it and simply describe your need.")
+st.caption("Choose a field for a quicker search, or let AI decide from your need.")
 
-field_labels = [
-    "No specific field",
-    "🎓 Education",
-    "🌾 Agriculture",
-    "💼 Business",
-    "☀️ Energy",
+# Six easy-to-understand field shortcuts. They are optional: the user's
+# natural-language need remains the primary search signal.
+field_options = [
+    ("🎓", "Education", "Scholarships, fees, laptops & student support", "Education"),
+    ("🌾", "Agriculture", "Farming, tractors, Kissan Card & subsidies", "Agriculture"),
+    ("💼", "Business", "Business loans, financing & entrepreneurship", "Business"),
+    ("☀️", "Energy", "Solar panels & electricity support", "Energy"),
+    ("🤝", "Social Welfare", "Financial assistance & welfare support", "Social Welfare"),
+    ("🐄", "Livestock", "Cattle, dairy & livestock support", "Livestock"),
 ]
-field_choice = st.radio(
-    "Quickly choose a field (optional)",
-    field_labels,
-    horizontal=True,
-    index=0,
-)
-field_map = {
-    "🎓 Education": "Education",
-    "🌾 Agriculture": "Agriculture",
-    "💼 Business": "Business",
-    "☀️ Energy": "Energy",
-}
-selected_category = field_map.get(field_choice)
+
+if "selected_field" not in st.session_state:
+    st.session_state.selected_field = None
+
+st.markdown("**Quickly choose a field (optional)**")
+for row_start in range(0, len(field_options), 3):
+    cols = st.columns(3)
+    for col, (icon, title, desc, category) in zip(cols, field_options[row_start:row_start+3]):
+        with col:
+            selected = st.session_state.selected_field == category
+            card_class = "field-card field-selected" if selected else "field-card"
+            st.markdown(
+                f'<div class="{card_class}"><div class="field-card-title">{icon} {title}</div>'
+                f'<div class="field-card-text">{desc}</div></div>',
+                unsafe_allow_html=True,
+            )
+            if st.button("Selected ✓" if selected else "Choose", key=f"field_{category}", use_container_width=True):
+                st.session_state.selected_field = None if selected else category
+                st.rerun()
+
+selected_category = st.session_state.selected_field
+if selected_category:
+    st.caption(f"Selected field: **{selected_category}** · You can still describe your need in your own words below.")
+else:
+    st.caption("No field selected — AI will understand the field from your need.")
 
 query = st.text_area(
     "Describe your situation in your own words *",
